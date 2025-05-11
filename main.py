@@ -1,14 +1,20 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+import os
 
 # Your TradingView public chart URL
-chart_url = 'https://www.tradingview.com/chart/YiBYLtYW/?symbol=CRYPTO%3AETHUSD'
+# chart_url = 'https://www.tradingview.com/chart/YiBYLtYW/?symbol=CRYPTO%3AETHUSD'
+chart_url = 'https://www.tradingview.com/chart/YiBYLtYW/?symbol=NSE%3AHDFCBANK'
+
+# Extract symbol name from URL
+symbol_name = chart_url.split('symbol=')[-1].split('&')[0].replace('%3A', '_')
 # Define different timeframes
 timeframes = {
     'hourly': '1H',
     'daily': '1D',
-    'weekly': '1W'
+    'weekly': '1W',
+    'monthly': '1M',
 }
 
 # Function to take screenshots for different timeframes
@@ -39,6 +45,10 @@ import time
 # Initialize the Chrome driver with options
 driver = webdriver.Chrome(options=options)
 
+# Ensure ScreenShot directory exists
+screenshot_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ScreenShot')
+os.makedirs(screenshot_dir, exist_ok=True)
+
 # Loop through each timeframe and take screenshots
 for name, url in chart_screenshots:
     print(f"Loading: {url}")
@@ -47,8 +57,8 @@ for name, url in chart_screenshots:
     # Wait for the chart to load (increase sleep if needed)
     time.sleep(10)  # Increased to ensure chart loads completely
     
-    # Take screenshot with timeframe name
-    screenshot_file = f'tradingview_chart_{name}.png'
+    # Take screenshot with symbol name and timeframe
+    screenshot_file = os.path.join(screenshot_dir, f'{symbol_name}_{name}.png')
     driver.save_screenshot(screenshot_file)
     print(f"Screenshot saved: {screenshot_file}")
 
